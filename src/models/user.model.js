@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 const { isEmail, isURL } = require('validator');
 const bcrypt = require('bcrypt');
+const Cart = require('./cart.model');
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Please enter your name!']
+  },
+  cart: {
+    type: mongoose.Schema.Types.ObjectId
   },
   email: {
     type: String,
@@ -28,9 +32,23 @@ const userSchema = new mongoose.Schema({
 
 //Will work pre(before) save!
 userSchema.pre('save', async function fn(next) {
-  if (!this.isModified()) return next();
   this.password = await bcrypt.hash(this.password, 13);
   next();
+});
+
+// Define a pre-save middleware to create a default cart and save its ID in the user's cart field
+userSchema.pre('save', async function (next) {
+  if (this.role === 'user' && !this.cart) {
+    try {
+      const cart = await Cart.create({ userId: this._id });
+      this.cart = cart._id;
+      next();
+    } catch (err) {
+      next(err);
+    }
+  } else {
+    next();
+  }
 });
 
 //An instance method, available on every instance of document

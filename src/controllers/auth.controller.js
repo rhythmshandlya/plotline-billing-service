@@ -10,13 +10,14 @@ const { catchAsync } = require('../util/catchAsync');
 exports.signup = catchAsync(async (req, res, next) => {
   const body = req.body;
   if (!body.name || !body.email || !body.password) {
-    next(new AppError('Please provide name, email and password', 400));
+    return next(new AppError('Please provide name, email and password', 400));
   }
   const newUser = await User.create({
     name: body.name,
     email: body.email,
     password: body.password
   });
+
   const token = getJwt(
     newUser._id,
     process.env.JWT_SECRET,
@@ -29,8 +30,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       id: newUser._id,
       name: newUser.name,
       email: newUser.email,
-      role: newUser.role,
-      dp: newUser.dp
+      role: newUser.role
     },
     token
   });
@@ -66,6 +66,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
   let token = req.headers?.authorization?.split(' ')[1];
+
   if (!token) return next(new AppError('Please login to get access', 401));
 
   const payLoad = await promisify(jwt.verify)(token, process.env.JWT_SECRET);

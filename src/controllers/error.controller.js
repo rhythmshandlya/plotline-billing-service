@@ -1,5 +1,5 @@
 const AppError = require('../util/AppError');
-
+const config = require('../config');
 const castErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}`;
   return new AppError(message, 400);
@@ -51,8 +51,7 @@ const prodError = (err, res) => {
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = false;
-
-  if (process.env.MODE === 'DEV') {
+  if (config.MODE === 'DEV') {
     devError(err, res);
   } else if (process.env.MODE === 'PRO') {
     let error = Object.create(err);
