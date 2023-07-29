@@ -8,8 +8,5 @@ module.exports = {
   REDIS_URI: process.env.REDIS_URI || 'redis://localhost:6379',
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRY: '30d',
-  MODE: 'DEV',
-  CLIENT_ID: process.env.CLIENT_ID,
-  CLIENT_SECRET: process.env.CLIENT_ID,
-  CLIENT_URL: 'http://localhost:3000/'
+  MODE: 'DEV'
 };
