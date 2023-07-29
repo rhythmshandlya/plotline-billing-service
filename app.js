@@ -1,16 +1,13 @@
 const express = require('express');
 const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const sanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
-const hpp = require('hpp');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const userRouter = require('./routes/userRouter');
-const authRouter = require('./routes/authRouter');
-const s3Router = require('./routes/s3Router');
-const driveRouter = require('./routes/driveRouter');
+const globalErrHandler = require('./controllers/errorController');
+const AppError = require('./util/AppError');
+const routes = require('./routes');
 
 const app = express();
 
@@ -24,9 +21,6 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
-const AppError = require('./util/AppError');
-const globalErrHandler = require('./controllers/errorController');
-
 app.use(cookieParser());
 
 app.use(helmet());
@@ -38,16 +32,13 @@ if (process.env.MODE == 'DEV') {
 app.use(sanitize());
 app.use(xss());
 
-app.use('/ping', (req, res) => {
+app.use('/', (req, res) => {
   res.status(200).json({
-    message: 'pong'
+    message: 'Welcome to the billing API!'
   });
 });
 
-app.use('/api/auth', authRouter);
-app.use('/api/user', userRouter);
-app.use('/api/s3', s3Router);
-app.use('/api/drive', driveRouter);
+app.use('/api/v1', routes);
 
 app.use('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on the server`, 404));
