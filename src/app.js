@@ -4,7 +4,6 @@ const helmet = require('helmet');
 const sanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const cors = require('cors');
-const cookieParser = require('cookie-parser');
 
 const globalErrHandler = require('./controllers/error.controller');
 const AppError = require('./util/AppError');
@@ -21,8 +20,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
-
-app.use(cookieParser());
 
 app.use(helmet());
 
