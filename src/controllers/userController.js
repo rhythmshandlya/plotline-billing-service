@@ -18,13 +18,16 @@ exports.getAllUsers = async (req, res, next) => {
 exports.updateUser = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm)
     return next(new AppError('Cannot change user password from this route!'));
+
   if (req.body.email) return next(new AppError('Email cannot be changed!'));
 
-  bodyFilter = filterData(req.body, 'name', 'email', 'password');
-  const updatedUser = await User.findByIdAndUpdate(req.user._id, bodyFilter, {
+  bodyFilter = filterData(req.body, 'name', 'email');
+
+  const updatedUser = await User.findByIdAndUpdate(req.params.id, bodyFilter, {
     new: true,
     runValidator: true
   });
+
   res.status(200).json({
     status: true,
     user: updatedUser
@@ -32,7 +35,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteUser = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate(req.user._id, { active: false });
+  await User.findByIdAndUpdate(req.params._id, { active: false });
   res.status(204).json({
     status: true,
     data: null
