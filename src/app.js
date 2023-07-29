@@ -33,13 +33,7 @@ if (process.env.MODE == 'DEV') {
 app.use(sanitize());
 app.use(xss());
 
-app.use('/', (req, res) => {
-  res.status(200).json({
-    message: 'Welcome to the billing API!'
-  });
-});
-
-app.use('/api/v1', routes);
+app.use('/v1', routes);
 
 app.use('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on the server`, 404));

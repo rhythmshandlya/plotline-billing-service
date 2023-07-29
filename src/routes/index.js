@@ -1,7 +1,7 @@
 const express = require('express');
 
-const { authRouter } = require('./authRouter');
-const { userRouter } = require('./userRouter');
+const authRouter = require('./authRouter');
+const userRouter = require('./userRouter');
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ const routes = [
 ];
 
 routes.forEach((route) => {
-  router.route(route.path, route.router);
+  router.use(route.path, route.router);
 });
 
 module.exports = router;

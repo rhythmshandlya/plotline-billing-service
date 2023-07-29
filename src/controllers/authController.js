@@ -1,16 +1,14 @@
 const User = require('../models/userModel');
 const { promisify } = require('util');
 const { catchAsync } = require('../util/catchAsync');
-const jwt = require('jsonwebtoken');
 const AppError = require('../util/AppError');
-const getJwt = require('../util/getJwt');
+const { getJwt } = require('../util/getJwt');
 
 exports.signup = catchAsync(async (req, res, next) => {
   const body = req.body;
   if (!body.name || !body.email || !body.password) {
     next(new AppError('Please provide name, email and password', 400));
   }
-
   const newUser = await User.create({
     name: body.name,
     email: body.email,

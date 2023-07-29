@@ -18,16 +18,6 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'mod', 'user'],
     default: 'user'
   },
-  dp: {
-    type: String,
-    default:
-      'https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1631&q=80'
-  },
-  role: {
-    type: String,
-    enum: ['user'],
-    default: 'user'
-  },
   password: {
     type: String,
     required: [true, 'Please Enter A Password!'],
