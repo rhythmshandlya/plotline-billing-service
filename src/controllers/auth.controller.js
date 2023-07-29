@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 
-const User = require('../models/userModel');
+const User = require('../models/user.model');
 
 const AppError = require('../util/AppError');
 const { getJwt } = require('../util/getJwt');
