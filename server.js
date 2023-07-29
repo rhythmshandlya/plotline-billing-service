@@ -1,4 +1,4 @@
-const app = require('./app');
+const app = require('./src/app');
 const mongoose = require('mongoose');
 const config = require('./config');
 
@@ -12,11 +12,9 @@ mongoose.connect(uri, {
   useFindAndModify: false
 });
 
-// Handle MongoDB connection success and error
+// Handle MongoDB connection success
 const db = mongoose.connection;
-db.on('error', (error) =>
-  console.error('MongoDB connection error:', error.message)
-);
+
 db.once('open', () => console.log('Connected to the MongoDB database'));
 
 // Start the server

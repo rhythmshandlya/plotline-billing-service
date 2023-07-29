@@ -5,6 +5,7 @@ const sanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+
 const globalErrHandler = require('./controllers/errorController');
 const AppError = require('./util/AppError');
 const routes = require('./routes');
