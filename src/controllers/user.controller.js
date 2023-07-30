@@ -15,6 +15,7 @@ exports.getAllUsers = async (req, res, next) => {
     next(error);
   }
 };
+
 exports.updateUser = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm)
     return next(new AppError('Cannot change user password from this route!'));

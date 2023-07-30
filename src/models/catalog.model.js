@@ -5,7 +5,7 @@ const catalogSchema = new mongoose.Schema({
   itemId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    refPath: 'itemType' // Dynamic reference based on 'itemType' field
+    ref: 'itemType'
   },
   itemType: {
     type: String,

@@ -18,20 +18,25 @@ exports.getAllCatalogItems = async (req, res, next) => {
 exports.getCatalogItem = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
+  // Find the catalog item and populate the 'itemId' field dynamically based on the 'itemType'
   const catalogItem = await Catalog.findOne({
-    $or: [
-      { _id: id }, // Find by catalog item ID
-      { itemId: id } // Find by associated Product or Service ID
-    ]
-  });
+    $or: [{ _id: id }, { itemId: id }]
+  }).populate('itemId');
 
   if (!catalogItem) {
-    return next(new AppError(404, 'Catalog item not found!'));
+    return next(new AppError(404, 'Catalog item not found'));
   }
 
   res.status(200).json({
     status: true,
-    catalogItem
+    data: {
+      [catalogItem.itemType.toLowerCase()]: catalogItem.itemId,
+      name: catalogItem.name,
+      price: catalogItem.price,
+      category: catalogItem.description,
+      description: catalogItem.description,
+      _id: catalogItem._id
+    }
   });
 });
 
