@@ -65,33 +65,36 @@ exports.removeFromCart = catchAsync(async (req, res) => {
   if (req.params.userId !== req.user._id.toString()) {
     throw new AppError('You are not authorized to perform this action', 403);
   }
+
   const itemId = req.params.itemId;
 
   // Find the cart for the current user
-  const cart = await Cart.findOne({ userId: req.user._id }).populate('items');
+  const cart = await Cart.findOne({ userId: req.user._id });
 
   if (!cart) {
     throw new AppError('Cart not found', 404);
   }
 
-  // Find the cart item with the specified itemId
-  const cartItem = cart.items.find((item) => item.item.toString() === itemId);
+  // Decrement the quantity of the cart item in the database
+  let newCartItem = await CartItem.findOneAndUpdate(
+    { item: itemId },
+    { $inc: { quantity: -1 } },
+    { new: true }
+  );
 
-  if (!cartItem) {
-    throw new AppError('Item not found in the cart', 404);
+  console.log(newCartItem);
+
+  // Remove the cart item from the cart if the quantity becomes 0
+  if (newCartItem.quantity <= 0) {
+    await Cart.findOneAndUpdate(
+      { userId: req.user._id },
+      { $pull: { items: { item: itemId } } },
+      { new: true }
+    );
+    await CartItem.findOneAndDelete({ item: itemId });
   }
 
-  // Decrement the quantity of the cart item
-  cartItem.quantity--;
-
-  // Remove the cart item if the quantity becomes 0
-  if (cartItem.quantity <= 0) {
-    cart.items = cart.items.filter((item) => item.item.toString() !== itemId);
-  }
-
-  await cart.save();
-
-  res.json({ success: true, cart });
+  res.json({ success: true, cartItem: newCartItem });
 });
 
 exports.clearCart = catchAsync(async (req, res) => {
