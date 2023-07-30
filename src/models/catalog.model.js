@@ -5,7 +5,7 @@ const catalogSchema = new mongoose.Schema({
   itemId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'itemType'
+    refPath: 'itemType'
   },
   itemType: {
     type: String,
@@ -13,7 +13,6 @@ const catalogSchema = new mongoose.Schema({
     required: true
   },
   name: { type: String, required: true },
-  price: { type: Number, required: true },
   description: { type: String },
   category: {
     type: [String],

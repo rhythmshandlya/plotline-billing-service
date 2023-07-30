@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/', catalogController.getAllCatalogItems);
 
 // Read a single catalog item by ID
-router.get('/:id', catalogController.getCatalogItem);
+router.get('/:catalogId', catalogController.getCatalogItem);
 
 // Create a new catalog item
 router.post(
@@ -20,7 +20,7 @@ router.post(
 
 // Update a catalog item by ID
 router.patch(
-  '/:id',
+  '/:catalogId',
   protect,
   restrictTo('admin'),
   catalogController.updateCatalogItem
@@ -28,7 +28,7 @@ router.patch(
 
 // Delete a catalog item by ID
 router.delete(
-  '/:id',
+  '/:catalogId',
   protect,
   restrictTo('admin'),
   catalogController.deleteCatalogItem

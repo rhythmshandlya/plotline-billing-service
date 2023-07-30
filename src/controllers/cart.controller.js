@@ -4,11 +4,6 @@ const { catchAsync } = require('../util/catchAsync');
 const CartItem = require('../models/cartItem.model');
 
 exports.getCart = catchAsync(async (req, res) => {
-  // Check if the authenticated user is the same as the requested userId
-  if (req.params.userId !== req.user._id.toString()) {
-    throw new AppError('You are not authorized to view this cart', 403);
-  }
-
   const itemType = 'Service';
   // Find the cart for the current user and populate the 'items' array
   const cart = await Cart.findOne({ userId: req.user._id }).populate({
@@ -22,13 +17,8 @@ exports.getCart = catchAsync(async (req, res) => {
 });
 
 exports.addToCart = catchAsync(async (req, res) => {
-  // Check if the authenticated user is the same as the requested userId
-  if (req.params.userId !== req.user._id.toString()) {
-    throw new AppError('You are not authorized to perform this action', 403);
-  }
-
   // Extract item details from the request body
-  const { itemId } = req.body;
+  const { itemId } = req.params;
   if (!itemId) throw new AppError('Item ID is required', 400);
 
   // Find the cart for the current user
@@ -61,18 +51,17 @@ exports.addToCart = catchAsync(async (req, res) => {
 });
 
 exports.removeFromCart = catchAsync(async (req, res) => {
-  // Check if the authenticated user is the same as the requested userId
-  if (req.params.userId !== req.user._id.toString()) {
-    throw new AppError('You are not authorized to perform this action', 403);
-  }
-
   const itemId = req.params.itemId;
 
   // Find the cart for the current user
-  const cart = await Cart.findOne({ userId: req.user._id });
+  const cart = await Cart.findOne({ userId: req.user._id }).populate('items');
 
-  if (!cart) {
-    throw new AppError('Cart not found', 404);
+  if (
+    !cart.items.find((item) => {
+      return item.item == itemId;
+    })
+  ) {
+    throw new AppError('Cart has no such item', 404);
   }
 
   // Decrement the quantity of the cart item in the database
@@ -98,11 +87,6 @@ exports.removeFromCart = catchAsync(async (req, res) => {
 });
 
 exports.clearCart = catchAsync(async (req, res) => {
-  // Check if the authenticated user is the same as the requested userId
-  if (req.params.userId !== req.user._id.toString()) {
-    throw new AppError('You are not authorized to perform this action', 403);
-  }
-
   // Find the cart for the current user
   const cart = await Cart.findOne({ userId: req.user._id });
 

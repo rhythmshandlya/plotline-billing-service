@@ -16,12 +16,12 @@ exports.getAllCatalogItems = async (req, res, next) => {
 };
 
 exports.getCatalogItem = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
+  const { catalogId } = req.params;
 
   // Find the catalog item and populate the 'itemId' field dynamically based on the 'itemType'
-  const catalogItem = await Catalog.findOne({
-    $or: [{ _id: id }, { itemId: id }]
-  }).populate('itemId');
+  const catalogItem = await Catalog.findOne({ _id: catalogId }).populate(
+    'itemId'
+  );
 
   if (!catalogItem) {
     return next(new AppError(404, 'Catalog item not found'));
@@ -33,6 +33,7 @@ exports.getCatalogItem = catchAsync(async (req, res, next) => {
       [catalogItem.itemType.toLowerCase()]: catalogItem.itemId,
       name: catalogItem.name,
       price: catalogItem.price,
+      tax: catalogItem.tax,
       category: catalogItem.description,
       description: catalogItem.description,
       _id: catalogItem._id
