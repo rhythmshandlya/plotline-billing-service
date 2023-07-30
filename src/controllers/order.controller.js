@@ -25,7 +25,7 @@ exports.createOrder = catchAsync(async (req, res, next) => {
   }
 
   // Extract items and total from the cart
-  const { items, total = 10000 } = cart;
+  const { items, total = cart.total } = cart;
 
   // Create the order using the cart items
   const newOrder = await Order.create({

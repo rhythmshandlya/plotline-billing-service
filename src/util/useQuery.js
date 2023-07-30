@@ -34,6 +34,10 @@ const useQuery = async (Model, query) => {
       .limit(limitNumber)
       .sort({ [sortBy]: sortOrder });
 
+    if (query.populate) {
+      queryBuilder.populate(query.populate);
+    }
+
     // Execute the query to get the paginated and sorted data
     const data = await queryBuilder;
 

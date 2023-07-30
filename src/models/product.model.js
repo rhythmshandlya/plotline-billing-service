@@ -1,19 +1,24 @@
 const mongoose = require('mongoose');
 
-const productSchema = new mongoose.Schema({
-  brand: { type: String },
-  SKU: { type: String },
-  weight: { type: Number },
-  price: { type: Number, default: 0 },
-  dimensions: {
-    length: { type: Number },
-    width: { type: Number },
-    height: { type: Number }
+const productSchema = new mongoose.Schema(
+  {
+    brand: { type: String },
+    SKU: { type: String },
+    weight: { type: Number },
+    price: { type: Number, default: 0 },
+    dimensions: {
+      length: { type: Number },
+      width: { type: Number },
+      height: { type: Number }
+    },
+    colors: { type: [String] },
+    warranty: { type: String },
+    tax: { type: Number, default: 0 } // Tax amount will be calculated and set before saving
   },
-  colors: { type: [String] },
-  warranty: { type: String },
-  tax: { type: Number, default: 0 } // Tax amount will be calculated and set before saving
-});
+  {
+    versionKey: false // Disable the versionKey (__v) field
+  }
+);
 
 // Pre-save middleware to calculate and set the tax amount
 productSchema.pre('save', function (next) {

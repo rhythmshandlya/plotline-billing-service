@@ -3,32 +3,37 @@ const { isEmail, isURL } = require('validator');
 const bcrypt = require('bcrypt');
 const Cart = require('./cart.model');
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Please enter your name!']
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'Please enter your name!']
+    },
+    cart: {
+      type: mongoose.Schema.Types.ObjectId
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: [true, 'Please enter your email!'],
+      validate: [isEmail, 'Please provide valid Email']
+    },
+    role: {
+      type: String,
+      enum: ['admin', 'mod', 'user'],
+      default: 'user'
+    },
+    password: {
+      type: String,
+      required: [true, 'Please Enter A Password!'],
+      minLength: 8,
+      select: false
+    }
   },
-  cart: {
-    type: mongoose.Schema.Types.ObjectId
-  },
-  email: {
-    type: String,
-    unique: true,
-    required: [true, 'Please enter your email!'],
-    validate: [isEmail, 'Please provide valid Email']
-  },
-  role: {
-    type: String,
-    enum: ['admin', 'mod', 'user'],
-    default: 'user'
-  },
-  password: {
-    type: String,
-    required: [true, 'Please Enter A Password!'],
-    minLength: 8,
-    select: false
+  {
+    versionKey: false // Disable the versionKey (__v) field
   }
-});
+);
 
 //Will work pre(before) save!
 userSchema.pre('save', async function fn(next) {

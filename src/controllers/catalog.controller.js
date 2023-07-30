@@ -7,13 +7,16 @@ const { catchAsync } = require('../util/catchAsync');
 const { filterData } = require('../util/filterData');
 const useQuery = require('../util/useQuery');
 
-exports.getAllCatalogItems = async (req, res, next) => {
-  const catalogData = await useQuery(Catalog, req.query);
+exports.getAllCatalogItems = catchAsync(async (req, res, next) => {
+  const catalogData = await useQuery(Catalog, {
+    ...req.query,
+    populate: 'itemId'
+  });
   res.status(200).json({
     status: true,
-    ...catalogData
+    data: catalogData
   });
-};
+});
 
 exports.getCatalogItem = catchAsync(async (req, res, next) => {
   const { catalogId } = req.params;
@@ -22,7 +25,6 @@ exports.getCatalogItem = catchAsync(async (req, res, next) => {
   const catalogItem = await Catalog.findOne({ _id: catalogId }).populate(
     'itemId'
   );
-
   if (!catalogItem) {
     return next(new AppError(404, 'Catalog item not found'));
   }
@@ -50,6 +52,13 @@ exports.createCatalogItem = catchAsync(async (req, res, next) => {
     );
   }
 
+  if (
+    (req.body.product && itemType == 'Service') ||
+    (req.body.service && itemType == 'Product')
+  ) {
+    return next(new AppError('Invalid request body. Catalog Mismatch'));
+  }
+
   let newItem;
   if (itemType === 'Product') {
     newItem = await Product.create(req.body.product);
@@ -61,8 +70,8 @@ exports.createCatalogItem = catchAsync(async (req, res, next) => {
     );
   }
   const newCatalogItem = await Catalog.create({
-    itemId: newItem._id,
     itemType,
+    itemId: newItem._id,
     name,
     price,
     description,
@@ -71,7 +80,15 @@ exports.createCatalogItem = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: true,
-    catalogItem: newCatalogItem
+    data: {
+      _id: newCatalogItem._id,
+      itemType,
+      name,
+      price,
+      description,
+      category,
+      [itemType.toLowerCase()]: newItem
+    }
   });
 });
 

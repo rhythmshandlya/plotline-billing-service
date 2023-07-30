@@ -1,14 +1,19 @@
 const mongoose = require('mongoose');
 
-const serviceSchema = new mongoose.Schema({
-  duration: { type: Number, required: true },
-  serviceProvider: { type: String, required: true },
-  price: { type: Number, default: 0 },
-  serviceLocation: { type: String },
-  availableTimeSlots: { type: [String] },
-  serviceAddOns: { type: [String] },
-  tax: { type: Number, default: 0 } // Tax amount will be calculated and set before saving
-});
+const serviceSchema = new mongoose.Schema(
+  {
+    duration: { type: Number, required: true },
+    serviceProvider: { type: String, required: true },
+    price: { type: Number, default: 0 },
+    serviceLocation: { type: String },
+    availableTimeSlots: { type: [String] },
+    serviceAddOns: { type: [String] },
+    tax: { type: Number, default: 0 } // Tax amount will be calculated and set before saving
+  },
+  {
+    versionKey: false // Disable the versionKey (__v) field
+  }
+);
 
 // Pre-save middleware to calculate and set the tax amount for services
 serviceSchema.pre('save', function (next) {
